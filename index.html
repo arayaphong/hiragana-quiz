@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiragana Pairing Quiz</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .table-container {
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 10px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        tr {
+            cursor: pointer;
+        }
+
+        tr:hover {
+            background-color: #f0f0f0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .question,
+        .choices {
+            margin: 20px 0;
+        }
+
+        .result-container {
+            border: 1px solid black;
+            padding: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Hiragana Pairing Quiz</h1>
+
+    <div class="table-container">
+        <table>
+            <tr>
+                <th>Vowels</th>
+                <th>A</th>
+                <th>I</th>
+                <th>U</th>
+                <th>E</th>
+                <th>O</th>
+            </tr>
+            <tr onclick="selectRow('k')">
+                <td>K</td>
+                <td>か (ka)</td>
+                <td>き (ki)</td>
+                <td>く (ku)</td>
+                <td>け (ke)</td>
+                <td>こ (ko)</td>
+            </tr>
+            <tr onclick="selectRow('s')">
+                <td>S</td>
+                <td>さ (sa)</td>
+                <td>し (shi)</td>
+                <td>す (su)</td>
+                <td>せ (se)</td>
+                <td>そ (so)</td>
+            </tr>
+            <tr onclick="selectRow('t')">
+                <td>T</td>
+                <td>た (ta)</td>
+                <td>ち (chi)</td>
+                <td>つ (tsu)</td>
+                <td>て (te)</td>
+                <td>と (to)</td>
+            </tr>
+            <tr onclick="selectRow('n')">
+                <td>N</td>
+                <td>な (na)</td>
+                <td>に (ni)</td>
+                <td>ぬ (nu)</td>
+                <td>ね (ne)</td>
+                <td>の (no)</td>
+            </tr>
+            <tr onclick="selectRow('h')">
+                <td>H</td>
+                <td>は (ha)</td>
+                <td>ひ (hi)</td>
+                <td>ふ (fu)</td>
+                <td>へ (he)</td>
+                <td>ほ (ho)</td>
+            </tr>
+            <tr onclick="selectRow('m')">
+                <td>M</td>
+                <td>ま (ma)</td>
+                <td>み (mi)</td>
+                <td>む (mu)</td>
+                <td>め (me)</td>
+                <td>も (mo)</td>
+            </tr>
+            <tr onclick="selectRow('y')">
+                <td>Y</td>
+                <td>や (ya)</td>
+                <td>-</td>
+                <td>ゆ (yu)</td>
+                <td>-</td>
+                <td>よ (yo)</td>
+            </tr>
+            <tr onclick="selectRow('r')">
+                <td>R</td>
+                <td>ら (ra)</td>
+                <td>り (ri)</td>
+                <td>る (ru)</td>
+                <td>れ (re)</td>
+                <td>ろ (ro)</td>
+            </tr>
+            <tr onclick="selectRow('w')">
+                <td>W</td>
+                <td>わ (wa)</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>を (wo)</td>
+            </tr>
+            <tr onclick="selectRow('ns')">
+                <td>Ns</td>
+                <td>-</td>
+                <td>-</td>
+                <td>ん (n)</td>
+                <td>-</td>
+                <td>-</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="game hidden">
+        <div class="question"></div>
+        <div class="choices"></div>
+        <div class="score"></div>
+        <button onclick="nextQuestion()">Next Question</button>
+        <button onclick="resetGame()">Restart Game</button>
+    </div>
+
+    <script>
+        const hiraganaVowels = [
+            ['か (ka)', 'き (ki)', 'く (ku)', 'け (ke)', 'こ (ko)'],
+            ['さ (sa)', 'し (shi)', 'す (su)', 'せ (se)', 'そ (so)'],
+            ['た (ta)', 'ち (chi)', 'つ (tsu)', 'て (te)', 'と (to)'],
+            ['な (na)', 'に (ni)', 'ぬ (nu)', 'ね (ne)', 'の (no)'],
+            ['は (ha)', 'ひ (hi)', 'ふ (fu)', 'へ (he)', 'ほ (ho)'],
+            ['ま (ma)', 'み (mi)', 'む (mu)', 'め (me)', 'も (mo)'],
+            ['や (ya)', '-', 'ゆ (yu)', '-', 'よ (yo)'],
+            ['ら (ra)', 'り (ri)', 'る (ru)', 'れ (re)', 'ろ (ro)'],
+            ['わ (wa)', '-', '-', '-', 'を (wo)'],
+            ['-', '-', 'ん (n)', '-', '-']
+        ];
+
+        const hiraganaRows = {
+            k: hiraganaVowels[0],
+            s: hiraganaVowels[1],
+            t: hiraganaVowels[2],
+            n: hiraganaVowels[3],
+            h: hiraganaVowels[4],
+            m: hiraganaVowels[5],
+            y: hiraganaVowels[6],
+            r: hiraganaVowels[7],
+            w: hiraganaVowels[8],
+            ns: hiraganaVowels[9]
+        };
+
+        let selectedRow = null;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const totalQuestions = 12;
+        let questions = [];
+
+        const toggleVisibility = (selector, show) => {
+            document.querySelector(selector).classList.toggle('hidden', !show);
+        };
+
+        const selectRow = rowKey => {
+            selectedRow = hiraganaRows[rowKey];
+            toggleVisibility('.table-container', false);
+            toggleVisibility('.game', true);
+            generateQuestions();
+            showQuestion();
+        };
+
+        const generateQuestions = () => {
+            const availableQuestions = selectedRow.filter(item => item !== '-');
+
+            if (availableQuestions.length === 0) {
+                console.error("No valid questions available for the selected row.");
+                resetGame();
+                return;
+            }
+
+            const repeat = Math.ceil(totalQuestions / availableQuestions.length);
+            questions = Array.from({ length: repeat }, () => availableQuestions).flat().slice(0, totalQuestions);
+            shuffleArrayPreventAdjacentDuplicates(questions);
+        };
+
+        const showQuestion = () => {
+            const resultElement = document.querySelector('.result');
+
+            if (currentQuestionIndex >= questions.length) {
+                alert(`Game over! Your score is ${score}/${questions.length}`);
+                resetGame();
+                return;
+            }
+
+            const question = questions[currentQuestionIndex];
+            if (!question || typeof question !== 'string' || !question.includes(' ')) {
+                console.error("Invalid question data", question);
+                resetGame();
+                return;
+            }
+
+            const [hiragana] = question.split(' ');
+            document.querySelector('.question').innerText = `What is the reading for this Hiragana: ${hiragana}?`;
+            generateChoices(question);
+        };
+
+        const generateChoices = correctQuestion => {
+            const correctAnswer = correctQuestion.split(' ')[1];
+            const allAnswers = selectedRow
+                .filter(item => item !== '-' && item !== correctQuestion)
+                .map(item => item.split(' ')[1]);
+            const choicesArray = [correctAnswer, ...allAnswers.slice(0, 4)];
+            const uniqueChoices = [...new Set(choicesArray)].slice(0, 5);
+            uniqueChoices.sort();
+
+            const choicesContainer = document.querySelector('.choices');
+            choicesContainer.innerHTML = '';
+            uniqueChoices.forEach(choice => {
+                const button = document.createElement('button');
+                button.innerText = choice;
+                button.onclick = () => checkAnswer(choice, correctAnswer);
+                choicesContainer.appendChild(button);
+            });
+        };
+
+        const checkAnswer = (selected, correct) => {
+            const resultElement = document.querySelector('.result-container');
+            if (selected === correct) {
+                score++;
+                resultElement.innerHTML += '<p>Correct!</p>';
+            } else {
+                resultElement.innerHTML += `<p>Wrong! The correct answer was: ${correct}</p>`;
+            }
+
+            currentQuestionIndex++;
+            showQuestion();
+        };
+
+
+        const nextQuestion = () => showQuestion();
+
+        const shuffleArrayPreventAdjacentDuplicates = array => {
+            const counts = array.reduce((acc, item) => {
+                acc[item] = (acc[item] || 0) + 1;
+                return acc;
+            }, {});
+
+            const items = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+
+            if (counts[items[0]] > Math.ceil(array.length / 2)) {
+                throw new Error("Cannot rearrange array to prevent adjacent duplicates.");
+            }
+
+            const sortedArray = items.flatMap(item => Array(counts[item]).fill(item));
+
+            const indices = [...Array(array.length).keys()];
+            const evenIndices = indices.filter(i => i % 2 === 0);
+            const oddIndices = indices.filter(i => i % 2 === 1);
+            const indicesOrder = [...evenIndices, ...oddIndices];
+
+            const result = indicesOrder.reduce((acc, idx, i) => {
+                acc[idx] = sortedArray[i];
+                return acc;
+            }, []);
+
+            return result;
+        };
+
+        
+        const resetGame = () => {
+            currentQuestionIndex = 0;
+            score = 0;
+            toggleVisibility('.game', false);
+            toggleVisibility('.table-container', true);
+            const resultContainer = document.querySelector('.result-container');
+            resultContainer.innerHTML = '<h3>Result:</h3>';
+            const gameContainer = document.querySelector('.game');
+            const finishButton = gameContainer.querySelector('button:last-child');
+            if (finishButton && finishButton.innerText === 'Finish') {
+                gameContainer.removeChild(finishButton);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const gameContainer = document.querySelector('.game');
+            const resultContainer = document.createElement('div');
+            resultContainer.classList.add('result-container');
+            resultContainer.style.border = '1px solid black';
+            resultContainer.style.padding = '10px';
+            resultContainer.style.marginTop = '20px';
+
+            const resultHeader = document.createElement('h3');
+            resultHeader.innerText = 'Result:';
+            resultContainer.appendChild(resultHeader);
+
+            gameContainer.appendChild(resultContainer);
+        });
+    </script>
+</body>
+
+</html>
