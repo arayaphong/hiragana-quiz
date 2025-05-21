@@ -4,331 +4,677 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hiragana Pairing Quiz</title>
+    <title>Hiragana Pairing Quiz with AI Help</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         body {
-            text-align: center;
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
-        .table-container {
-            display: inline-block;
-            margin-top: 20px;
-        }
-
-        table {
+        .table-container table {
             border-collapse: collapse;
             margin: 0 auto;
         }
 
-        th,
-        td {
-            border: 1px solid black;
-            padding: 10px;
+        .table-container th,
+        .table-container td {
+            border: 1px solid #e2e8f0;
+            /* Tailwind gray-300 */
+            padding: 0.75rem;
+            /* Tailwind p-3 */
             min-width: 60px;
             text-align: center;
         }
 
-        tr {
+        .table-container tr {
+            /* Applies to all rows, including header and body rows for the cursor */
             cursor: pointer;
         }
 
-        tr:hover {
-            background-color: #f0f0f0;
+        /* Individual tbody rows already have hover:bg-indigo-50 via Tailwind classes */
+
+        .choice-button,
+        .ai-button {
+            transition: all 0.2s ease-in-out;
         }
 
-        .hidden {
-            display: none;
+        .choice-button:hover,
+        .ai-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            /* Tailwind shadow-md */
         }
 
-        .question,
-        .choices {
-            margin: 20px 0;
+        .choice-button:active,
+        .ai-button:active {
+            transform: translateY(0);
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+            /* Tailwind shadow-inner */
         }
 
-        .result-container {
-            border: 1px solid black;
-            padding: 10px;
-            margin-top: 20px;
+        /* Styling for the AI Help Modal */
+        #aiHelpModalContentWrapper::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #aiHelpModalContentWrapper::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        #aiHelpModalContentWrapper::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        #aiHelpModalContentWrapper::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            /* Light grey */
+            border-top: 4px solid #6366f1;
+            /* Indigo */
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Styles for Markdown content in AI Help Modal */
+        #aiHelpModalContent h1,
+        #aiHelpModalContent h2,
+        #aiHelpModalContent h3 {
+            font-weight: bold;
+            margin-top: 0.75em;
+            margin-bottom: 0.25em;
+        }
+
+        #aiHelpModalContent h1 {
+            font-size: 1.5em;
+        }
+
+        #aiHelpModalContent h2 {
+            font-size: 1.25em;
+        }
+
+        #aiHelpModalContent h3 {
+            font-size: 1.1em;
+        }
+
+        #aiHelpModalContent p {
+            margin-bottom: 0.5em;
+        }
+
+        #aiHelpModalContent ul,
+        #aiHelpModalContent ol {
+            margin-left: 1.5em;
+            margin-bottom: 0.5em;
+            list-style-position: outside;
+        }
+
+        #aiHelpModalContent ul {
+            list-style-type: disc;
+        }
+
+        #aiHelpModalContent ol {
+            list-style-type: decimal;
+        }
+
+        #aiHelpModalContent strong {
+            font-weight: bold;
+        }
+
+        #aiHelpModalContent em {
+            font-style: italic;
+        }
+
+        #aiHelpModalContent code {
+            background-color: #f3f4f6;
+            /* Tailwind gray-100 */
+            padding: 0.1em 0.3em;
+            border-radius: 0.25rem;
+            /* Tailwind rounded-sm */
+            font-family: monospace;
+        }
+
+        #aiHelpModalContent pre {
+            background-color: #f3f4f6;
+            /* Tailwind gray-100 */
+            padding: 0.5em;
+            border-radius: 0.375rem;
+            /* Tailwind rounded-md */
+            overflow-x: auto;
+            margin-bottom: 0.5em;
+        }
+
+        #aiHelpModalContent pre code {
+            padding: 0;
+            background-color: transparent;
         }
     </style>
 </head>
 
-<body>
-    <h1>Hiragana Pairing Quiz</h1>
+<body
+    class="bg-gradient-to-br from-sky-100 to-indigo-200 min-h-screen flex flex-col items-center justify-center p-4 text-gray-800">
+    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-2xl">
+        <header class="mb-6 sm:mb-8 text-center">
+            <h1 class="text-3xl sm:text-4xl font-bold text-indigo-600">Hiragana Pairing Quiz</h1>
+            <p class="text-gray-600 mt-2">Test your Hiragana knowledge with AI assistance!</p>
+        </header>
 
-    <div class="table-container">
-        <table>
-            <tr>
-                <th>Vowels</th>
-                <th>A</th>
-                <th>I</th>
-                <th>U</th>
-                <th>E</th>
-                <th>O</th>
-            </tr>
-            <tr onclick="selectRow('k')">
-                <td>K</td>
-                <td>か (ka)</td>
-                <td>き (ki)</td>
-                <td>く (ku)</td>
-                <td>け (ke)</td>
-                <td>こ (ko)</td>
-            </tr>
-            <tr onclick="selectRow('s')">
-                <td>S</td>
-                <td>さ (sa)</td>
-                <td>し (shi)</td>
-                <td>す (su)</td>
-                <td>せ (se)</td>
-                <td>そ (so)</td>
-            </tr>
-            <tr onclick="selectRow('t')">
-                <td>T</td>
-                <td>た (ta)</td>
-                <td>ち (chi)</td>
-                <td>つ (tsu)</td>
-                <td>て (te)</td>
-                <td>と (to)</td>
-            </tr>
-            <tr onclick="selectRow('n')">
-                <td>N</td>
-                <td>な (na)</td>
-                <td>に (ni)</td>
-                <td>ぬ (nu)</td>
-                <td>ね (ne)</td>
-                <td>の (no)</td>
-            </tr>
-            <tr onclick="selectRow('h')">
-                <td>H</td>
-                <td>は (ha)</td>
-                <td>ひ (hi)</td>
-                <td>ふ (fu)</td>
-                <td>へ (he)</td>
-                <td>ほ (ho)</td>
-            </tr>
-            <tr onclick="selectRow('m')">
-                <td>M</td>
-                <td>ま (ma)</td>
-                <td>み (mi)</td>
-                <td>む (mu)</td>
-                <td>め (me)</td>
-                <td>も (mo)</td>
-            </tr>
-            <tr onclick="selectRow('y')">
-                <td>Y</td>
-                <td>や (ya)</td>
-                <td>-</td>
-                <td>ゆ (yu)</td>
-                <td>-</td>
-                <td>よ (yo)</td>
-            </tr>
-            <tr onclick="selectRow('r')">
-                <td>R</td>
-                <td>ら (ra)</td>
-                <td>り (ri)</td>
-                <td>る (ru)</td>
-                <td>れ (re)</td>
-                <td>ろ (ro)</td>
-            </tr>
-            <tr onclick="selectRow('w')">
-                <td>W</td>
-                <td>わ (wa)</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>を (wo)</td>
-            </tr>
-            <tr onclick="selectRow('ns')">
-                <td>Ns</td>
-                <td>-</td>
-                <td>-</td>
-                <td>ん (n)</td>
-                <td>-</td>
-                <td>-</td>
-            </tr>
-        </table>
-    </div>
+        <div class="table-container">
+            <table class="w-full rounded-lg overflow-hidden shadow-md">
+                <thead class="bg-indigo-500 text-white">
+                    <tr>
+                        <th class="p-3">Vowels</th>
+                        <th class="p-3">A</th>
+                        <th class="p-3">I</th>
+                        <th class="p-3">U</th>
+                        <th class="p-3">E</th>
+                        <th class="p-3">O</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr onclick="selectRow('k')" class="hover:bg-indigo-50 transition-colors duration-150">
+                        <td class="font-medium text-indigo-700 p-3">K</td>
+                        <td class="p-3">か (ka)</td>
+                        <td class="p-3">き (ki)</td>
+                        <td class="p-3">く (ku)</td>
+                        <td class="p-3">け (ke)</td>
+                        <td class="p-3">こ (ko)</td>
+                    </tr>
+                    <tr onclick="selectRow('s')" class="hover:bg-indigo-50 transition-colors duration-150">
+                        <td class="font-medium text-indigo-700 p-3">S</td>
+                        <td class="p-3">さ (sa)</td>
+                        <td class="p-3">し (shi)</td>
+                        <td class="p-3">す (su)</td>
+                        <td class="p-3">せ (se)</td>
+                        <td class="p-3">そ (so)</td>
+                    </tr>
+                    <tr onclick="selectRow('t')" class="hover:bg-indigo-50 transition-colors duration-150">
+                        <td class="font-medium text-indigo-700 p-3">T</td>
+                        <td class="p-3">た (ta)</td>
+                        <td class="p-3">ち (chi)</td>
+                        <td class="p-3">つ (tsu)</td>
+                        <td class="p-3">て (te)</td>
+                        <td class="p-3">と (to)</td>
+                    </tr>
+                    <tr onclick="selectRow('n')" class="hover:bg-indigo-50 transition-colors duration-150">
+                        <td class="font-medium text-indigo-700 p-3">N</td>
+                        <td class="p-3">な (na)</td>
+                        <td class="p-3">に (ni)</td>
+                        <td class="p-3">ぬ (nu)</td>
+                        <td class="p-3">ね (ne)</td>
+                        <td class="p-3">の (no)</td>
+                    </tr>
+                    <tr onclick="selectRow('h')" class="hover:bg-indigo-50 transition-colors duration-150">
+                        <td class="font-medium text-indigo-700 p-3">H</td>
+                        <td class="p-3">は (ha)</td>
+                        <td class="p-3">ひ (hi)</td>
+                        <td class="p-3">ふ (fu)</td>
+                        <td class="p-3">へ (he)</td>
+                        <td class="p-3">ほ (ho)</td>
+                    </tr>
+                    <tr onclick="selectRow('m')" class="hover:bg-indigo-50 transition-colors duration-150">
+                        <td class="font-medium text-indigo-700 p-3">M</td>
+                        <td class="p-3">ま (ma)</td>
+                        <td class="p-3">み (mi)</td>
+                        <td class="p-3">む (mu)</td>
+                        <td class="p-3">め (me)</td>
+                        <td class="p-3">も (mo)</td>
+                    </tr>
+                    <tr onclick="selectRow('y')" class="hover:bg-indigo-50 transition-colors duration-150">
+                        <td class="font-medium text-indigo-700 p-3">Y</td>
+                        <td class="p-3">や (ya)</td>
+                        <td class="p-3 text-gray-400">-</td>
+                        <td class="p-3">ゆ (yu)</td>
+                        <td class="p-3 text-gray-400">-</td>
+                        <td class="p-3">よ (yo)</td>
+                    </tr>
+                    <tr onclick="selectRow('r')" class="hover:bg-indigo-50 transition-colors duration-150">
+                        <td class="font-medium text-indigo-700 p-3">R</td>
+                        <td class="p-3">ら (ra)</td>
+                        <td class="p-3">り (ri)</td>
+                        <td class="p-3">る (ru)</td>
+                        <td class="p-3">れ (re)</td>
+                        <td class="p-3">ろ (ro)</td>
+                    </tr>
+                    <tr onclick="selectRow('w')" class="hover:bg-indigo-50 transition-colors duration-150">
+                        <td class="font-medium text-indigo-700 p-3">W</td>
+                        <td class="p-3">わ (wa)</td>
+                        <td class="p-3 text-gray-400">-</td>
+                        <td class="p-3 text-gray-400">-</td>
+                        <td class="p-3 text-gray-400">-</td>
+                        <td class="p-3">を (wo)</td>
+                    </tr>
+                    <tr onclick="selectRow('ns')" class="hover:bg-indigo-50 transition-colors duration-150">
+                        <td class="font-medium text-indigo-700 p-3">Ns</td>
+                        <td class="p-3 text-gray-400">-</td>
+                        <td class="p-3 text-gray-400">-</td>
+                        <td class="p-3">ん (n)</td>
+                        <td class="p-3 text-gray-400">-</td>
+                        <td class="p-3 text-gray-400">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <div class="game hidden">
-        <div class="question"></div>
-        <div class="choices"></div>
-        <div class="score"></div>
-        <button onclick="nextQuestion()">Next Question</button>
-        <button onclick="resetGame()">Restart Game</button>
+        <div class="game hidden mt-6 sm:mt-8">
+            <div id="questionArea" class="mb-6 p-4 bg-indigo-50 rounded-lg text-center">
+                <p class="text-xl sm:text-2xl font-semibold text-indigo-700" id="questionText">What is the reading for
+                    this Hiragana: <span class="text-4xl sm:text-5xl font-bold" id="hiraganaCharacter"></span>?</p>
+            </div>
+
+            <div id="choicesArea" class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
+            </div>
+
+            <div id="scoreArea" class="text-lg font-medium text-center mb-4">Score: <span id="currentScore"
+                    class="font-bold text-indigo-600">0</span> / <span id="totalQuestionsInQuiz"
+                    class="font-bold text-indigo-600">0</span></div>
+
+            <div id="messageArea" class="min-h-[2.5em] mb-6 text-center">
+            </div>
+
+            <div id="aiHelpSection" class="hidden mt-4 p-4 border-t border-gray-200 text-center">
+                <p class="mb-3 text-gray-700">Need help with <strong id="aiHelpCharReading"
+                        class="text-indigo-600"></strong>?</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-3">
+                    <button id="getMnemonicButton" onclick="getAIDrivenHelp('mnemonic')"
+                        class="ai-button w-full sm:w-auto bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50">✨
+                        Get Mnemonic</button>
+                    <button id="getFactButton" onclick="getAIDrivenHelp('fact')"
+                        class="ai-button w-full sm:w-auto bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50">✨
+                        Learn More</button>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mt-6">
+                <button id="nextQuestionButton" onclick="nextQuestion()"
+                    class="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 choice-button">Next
+                    Question</button>
+                <button onclick="resetGame()"
+                    class="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 choice-button">Restart
+                    Game</button>
+            </div>
+        </div>
+
+        <div id="gameOverModal"
+            class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
+            <div class="bg-white p-8 rounded-xl shadow-2xl text-center max-w-md w-full">
+                <h2 id="gameOverTitle" class="text-2xl sm:text-3xl font-bold text-indigo-600 mb-4">Game Over!</h2>
+                <p id="gameOverMessage" class="text-lg mb-6">Your final score is <span id="finalScore"
+                        class="font-bold">0</span>/<span id="finalTotal" class="font-bold">0</span>.</p>
+                <button onclick="closeModalAndReset()"
+                    class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 choice-button">Play
+                    Again</button>
+            </div>
+        </div>
+
+        <div id="aiHelpModal"
+            class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
+            <div class="bg-white p-6 rounded-xl shadow-2xl max-w-lg w-full">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="aiHelpModalTitle" class="text-xl font-semibold text-indigo-600">AI Learning Assistant</h3>
+                    <button onclick="closeAIHelpModal()"
+                        class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                <div id="aiHelpModalContentWrapper" class="max-h-[60vh] overflow-y-auto">
+                    <div id="aiHelpModalLoader" class="loader hidden"></div>
+                    <div id="aiHelpModalContent" class="text-gray-700 space-y-2">
+                    </div>
+                </div>
+                <button onclick="closeAIHelpModal()"
+                    class="mt-6 w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">Close</button>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        const hiraganaVowels = [
-            ['か (ka)', 'き (ki)', 'く (ku)', 'け (ke)', 'こ (ko)'],
-            ['さ (sa)', 'し (shi)', 'す (su)', 'せ (se)', 'そ (so)'],
-            ['た (ta)', 'ち (chi)', 'つ (tsu)', 'て (te)', 'と (to)'],
-            ['な (na)', 'に (ni)', 'ぬ (nu)', 'ね (ne)', 'の (no)'],
-            ['は (ha)', 'ひ (hi)', 'ふ (fu)', 'へ (he)', 'ほ (ho)'],
-            ['ま (ma)', 'み (mi)', 'む (mu)', 'め (me)', 'も (mo)'],
-            ['や (ya)', '-', 'ゆ (yu)', '-', 'よ (yo)'],
-            ['ら (ra)', 'り (ri)', 'る (ru)', 'れ (re)', 'ろ (ro)'],
-            ['わ (wa)', '-', '-', '-', 'を (wo)'],
-            ['-', '-', 'ん (n)', '-', '-']
-        ];
-
-        const hiraganaRows = {
-            k: hiraganaVowels[0],
-            s: hiraganaVowels[1],
-            t: hiraganaVowels[2],
-            n: hiraganaVowels[3],
-            h: hiraganaVowels[4],
-            m: hiraganaVowels[5],
-            y: hiraganaVowels[6],
-            r: hiraganaVowels[7],
-            w: hiraganaVowels[8],
-            ns: hiraganaVowels[9]
+        // --- Data ---
+        const hiraganaData = {
+            k: ['か (ka)', 'き (ki)', 'く (ku)', 'け (ke)', 'こ (ko)'],
+            s: ['さ (sa)', 'し (shi)', 'す (su)', 'せ (se)', 'そ (so)'],
+            t: ['た (ta)', 'ち (chi)', 'つ (tsu)', 'て (te)', 'と (to)'],
+            n: ['な (na)', 'に (ni)', 'ぬ (nu)', 'ね (ne)', 'の (no)'],
+            h: ['は (ha)', 'ひ (hi)', 'ふ (fu)', 'へ (he)', 'ほ (ho)'],
+            m: ['ま (ma)', 'み (mi)', 'む (mu)', 'め (me)', 'も (mo)'],
+            y: ['や (ya)', null, 'ゆ (yu)', null, 'よ (yo)'],
+            r: ['ら (ra)', 'り (ri)', 'る (ru)', 'れ (re)', 'ろ (ro)'],
+            w: ['わ (wa)', null, null, null, 'を (wo)'],
+            ns: [null, null, 'ん (n)', null, null]
         };
 
-        let selectedRow = null;
+        // --- State Variables ---
+        let selectedRowKey = null;
+        let currentQuestionsSet = [];
         let currentQuestionIndex = 0;
         let score = 0;
-        const totalQuestions = 12;
-        let questions = [];
+        const totalQuestionsPerQuiz = 10;
+        let currentHiraganaForAI = null; // Stores {char, reading} for AI help
 
-        const toggleVisibility = (selector, show) => {
-            document.querySelector(selector).classList.toggle('hidden', !show);
+        // --- DOM Elements ---
+        const tableContainer = document.querySelector('.table-container');
+        const gameContainer = document.querySelector('.game');
+        const questionTextElement = document.getElementById('questionText');
+        const hiraganaCharacterElement = document.getElementById('hiraganaCharacter');
+        const choicesArea = document.getElementById('choicesArea');
+        const currentScoreElement = document.getElementById('currentScore');
+        const totalQuestionsInQuizElement = document.getElementById('totalQuestionsInQuiz');
+        const messageArea = document.getElementById('messageArea');
+        const nextQuestionButton = document.getElementById('nextQuestionButton');
+
+        const gameOverModal = document.getElementById('gameOverModal');
+        const gameOverTitle = document.getElementById('gameOverTitle');
+        const gameOverMessage = document.getElementById('gameOverMessage');
+        const finalScoreElement = document.getElementById('finalScore');
+        const finalTotalElement = document.getElementById('finalTotal');
+
+        const aiHelpSection = document.getElementById('aiHelpSection');
+        const aiHelpCharReadingElement = document.getElementById('aiHelpCharReading');
+        const aiHelpModal = document.getElementById('aiHelpModal');
+        const aiHelpModalTitle = document.getElementById('aiHelpModalTitle');
+        const aiHelpModalContent = document.getElementById('aiHelpModalContent');
+        const aiHelpModalLoader = document.getElementById('aiHelpModalLoader');
+
+        // --- Utility Functions ---
+        const toggleVisibility = (element, show) => {
+            if (element) element.classList.toggle('hidden', !show);
+            else console.error("Attempted to toggle visibility of a null element.");
         };
 
-        const selectRow = rowKey => {
-            selectedRow = hiraganaRows[rowKey];
-            toggleVisibility('.table-container', false);
-            toggleVisibility('.game', true);
-            generateQuestions();
-            showQuestion();
+        const shuffleArray = (array) => {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
         };
 
-        const generateQuestions = () => {
-            const availableQuestions = selectedRow.filter(item => item !== '-');
+        const parseHiraganaString = (hiraganaString) => {
+            if (!hiraganaString || typeof hiraganaString !== 'string') return null;
+            const match = hiraganaString.match(/^(\S+)\s\((\S+)\)$/);
+            return match ? { char: match[1], reading: match[2] } : null;
+        };
 
-            if (availableQuestions.length === 0) {
-                console.error("No valid questions available for the selected row.");
-                resetGame();
+        // --- Game Logic Functions ---
+        const selectRow = (rowKey) => {
+            selectedRowKey = rowKey;
+            const rowData = hiraganaData[rowKey].filter(item => item !== null);
+            if (rowData.length === 0) {
+                showMessage("This row has no characters to quiz.", "text-red-500", 3000);
                 return;
             }
-
-            const repeat = Math.ceil(totalQuestions / availableQuestions.length);
-            questions = Array.from({ length: repeat }, () => availableQuestions).flat().slice(0, totalQuestions);
-            shuffleArrayPreventAdjacentDuplicates(questions);
+            currentQuestionsSet = [];
+            while (currentQuestionsSet.length < totalQuestionsPerQuiz) {
+                currentQuestionsSet.push(...rowData);
+            }
+            currentQuestionsSet = currentQuestionsSet.slice(0, totalQuestionsPerQuiz);
+            shuffleArray(currentQuestionsSet);
+            currentQuestionIndex = 0;
+            score = 0;
+            updateScoreDisplay();
+            totalQuestionsInQuizElement.textContent = currentQuestionsSet.length;
+            toggleVisibility(tableContainer, false);
+            toggleVisibility(gameContainer, true);
+            toggleVisibility(nextQuestionButton, false);
+            toggleVisibility(aiHelpSection, false); // Hide AI help initially
+            messageArea.textContent = '';
+            displayQuestion();
         };
 
-        const showQuestion = () => {
-            const resultElement = document.querySelector('.result');
-
-            if (currentQuestionIndex >= questions.length) {
-                alert(`Game over! Your score is ${score}/${questions.length}`);
-                resetGame();
+        const displayQuestion = () => {
+            if (currentQuestionIndex >= currentQuestionsSet.length) {
+                endGame();
                 return;
             }
-
-            const question = questions[currentQuestionIndex];
-            if (!question || typeof question !== 'string' || !question.includes(' ')) {
-                console.error("Invalid question data", question);
-                resetGame();
+            const questionString = currentQuestionsSet[currentQuestionIndex];
+            const parsedQuestion = parseHiraganaString(questionString);
+            if (!parsedQuestion) {
+                console.error("Invalid question data:", questionString);
+                showMessage("Error: Invalid question. Skipping.", "text-red-500", 3000);
+                currentQuestionIndex++;
+                setTimeout(displayQuestion, 50);
                 return;
             }
-
-            const [hiragana] = question.split(' ');
-            document.querySelector('.question').innerText = `What is the reading for this Hiragana: ${hiragana}?`;
-            generateChoices(question);
+            currentHiraganaForAI = parsedQuestion; // Store for AI help
+            hiraganaCharacterElement.textContent = parsedQuestion.char;
+            questionTextElement.childNodes[0].nodeValue = `What is the reading for this Hiragana: `;
+            generateChoices(parsedQuestion);
+            toggleVisibility(nextQuestionButton, false);
+            toggleVisibility(aiHelpSection, false); // Hide AI help until answer
+            messageArea.textContent = '';
         };
 
-        const generateChoices = correctQuestion => {
-            const correctAnswer = correctQuestion.split(' ')[1];
-            const allAnswers = selectedRow
-                .filter(item => item !== '-' && item !== correctQuestion)
-                .map(item => item.split(' ')[1]);
-            const choicesArray = [correctAnswer, ...allAnswers.slice(0, 4)];
-            const uniqueChoices = [...new Set(choicesArray)].slice(0, 5);
-            uniqueChoices.sort();
-
-            const choicesContainer = document.querySelector('.choices');
-            choicesContainer.innerHTML = '';
-            uniqueChoices.forEach(choice => {
+        const generateChoices = (correctParsedItem) => {
+            choicesArea.innerHTML = '';
+            let choices = [correctParsedItem.reading];
+            const allPossibleReadingsInRow = hiraganaData[selectedRowKey]
+                .filter(item => item !== null)
+                .map(item => parseHiraganaString(item)?.reading)
+                .filter(reading => reading && reading !== correctParsedItem.reading);
+            shuffleArray(allPossibleReadingsInRow);
+            for (let i = 0; choices.length < 4 && i < allPossibleReadingsInRow.length; i++) {
+                if (!choices.includes(allPossibleReadingsInRow[i])) {
+                    choices.push(allPossibleReadingsInRow[i]);
+                }
+            }
+            if (choices.length < 2 && Object.keys(hiraganaData).length > 1) {
+                const otherReadings = [];
+                for (const key in hiraganaData) {
+                    if (key !== selectedRowKey) {
+                        hiraganaData[key].forEach(item => {
+                            const parsed = parseHiraganaString(item);
+                            if (parsed && parsed.reading !== correctParsedItem.reading && !choices.includes(parsed.reading)) {
+                                otherReadings.push(parsed.reading);
+                            }
+                        });
+                    }
+                }
+                shuffleArray(otherReadings);
+                for (let i = 0; choices.length < 4 && i < otherReadings.length; i++) {
+                    if (!choices.includes(otherReadings[i])) choices.push(otherReadings[i]);
+                }
+            }
+            shuffleArray(choices);
+            choices.forEach(reading => {
                 const button = document.createElement('button');
-                button.innerText = choice;
-                button.onclick = () => checkAnswer(choice, correctAnswer);
-                choicesContainer.appendChild(button);
+                button.textContent = reading;
+                button.className = "w-full choice-button bg-white hover:bg-indigo-100 text-indigo-700 font-semibold py-3 px-4 border border-indigo-300 rounded-lg shadow-sm";
+                button.onclick = () => checkAnswer(reading, correctParsedItem.reading);
+                choicesArea.appendChild(button);
             });
         };
 
-        const checkAnswer = (selected, correct) => {
-            const resultElement = document.querySelector('.result-container');
-            if (selected === correct) {
+        const checkAnswer = (selectedReading, correctReading) => {
+            choicesArea.querySelectorAll('button').forEach(button => button.disabled = true);
+            if (selectedReading === correctReading) {
                 score++;
-                resultElement.innerHTML += '<p>Correct!</p>';
+                showMessage("Correct!", "text-green-500 font-bold", 1500);
             } else {
-                resultElement.innerHTML += `<p>Wrong! The correct answer was: ${correct}</p>`;
+                showMessage(`Wrong! Correct: ${correctReading}`, "text-red-500 font-bold", 2000);
             }
+            updateScoreDisplay();
+            aiHelpCharReadingElement.textContent = `${currentHiraganaForAI.char} (${currentHiraganaForAI.reading})`;
+            toggleVisibility(aiHelpSection, true); // Show AI help section
+            toggleVisibility(nextQuestionButton, true);
+        };
 
+        const nextQuestion = () => {
             currentQuestionIndex++;
-            showQuestion();
+            displayQuestion(); // This will hide AI help section again
         };
 
+        const updateScoreDisplay = () => {
+            currentScoreElement.textContent = score;
+        };
 
-        const nextQuestion = () => showQuestion();
-
-        const shuffleArrayPreventAdjacentDuplicates = array => {
-            const counts = array.reduce((acc, item) => {
-                acc[item] = (acc[item] || 0) + 1;
-                return acc;
-            }, {});
-
-            const items = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
-
-            if (counts[items[0]] > Math.ceil(array.length / 2)) {
-                throw new Error("Cannot rearrange array to prevent adjacent duplicates.");
+        const showMessage = (text, className, duration) => {
+            messageArea.textContent = text;
+            messageArea.className = `min-h-[2.5em] mb-6 text-center text-lg ${className}`;
+            if (duration) {
+                setTimeout(() => {
+                    if (messageArea.textContent === text) {
+                        messageArea.textContent = '';
+                        messageArea.className = 'min-h-[2.5em] mb-6 text-center';
+                    }
+                }, duration);
             }
-
-            const sortedArray = items.flatMap(item => Array(counts[item]).fill(item));
-
-            const indices = [...Array(array.length).keys()];
-            const evenIndices = indices.filter(i => i % 2 === 0);
-            const oddIndices = indices.filter(i => i % 2 === 1);
-            const indicesOrder = [...evenIndices, ...oddIndices];
-
-            const result = indicesOrder.reduce((acc, idx, i) => {
-                acc[idx] = sortedArray[i];
-                return acc;
-            }, []);
-
-            return result;
         };
 
-        
+        const endGame = () => {
+            finalScoreElement.textContent = score;
+            finalTotalElement.textContent = currentQuestionsSet.length;
+            let msg = `Your final score is ${score}/${currentQuestionsSet.length}.`;
+            if (score === currentQuestionsSet.length) {
+                gameOverTitle.textContent = "🎉 Perfect! 🎉";
+                msg += " Excellent work!";
+            } else if (score >= currentQuestionsSet.length * 0.7) {
+                gameOverTitle.textContent = "👍 Great Job! 👍";
+                msg += " You're doing great!";
+            } else {
+                gameOverTitle.textContent = "Game Over!";
+                msg += " Keep practicing!";
+            }
+            gameOverMessage.childNodes[0].nodeValue = msg;
+            toggleVisibility(gameOverModal, true);
+            toggleVisibility(aiHelpSection, false); // Hide AI help on game over
+        };
+
+        const closeModalAndReset = () => {
+            toggleVisibility(gameOverModal, false);
+            resetGame();
+        };
+
         const resetGame = () => {
+            selectedRowKey = null;
+            currentQuestionsSet = [];
             currentQuestionIndex = 0;
             score = 0;
-            toggleVisibility('.game', false);
-            toggleVisibility('.table-container', true);
-            const resultContainer = document.querySelector('.result-container');
-            resultContainer.innerHTML = '<h3>Result:</h3>';
-            const gameContainer = document.querySelector('.game');
-            const finishButton = gameContainer.querySelector('button:last-child');
-            if (finishButton && finishButton.innerText === 'Finish') {
-                gameContainer.removeChild(finishButton);
+            currentHiraganaForAI = null;
+            updateScoreDisplay();
+            toggleVisibility(gameContainer, false);
+            toggleVisibility(tableContainer, true);
+            toggleVisibility(gameOverModal, false);
+            toggleVisibility(aiHelpSection, false);
+            choicesArea.innerHTML = '';
+            messageArea.textContent = '';
+            messageArea.className = 'min-h-[2.5em] mb-6 text-center';
+            hiraganaCharacterElement.textContent = '';
+            questionTextElement.childNodes[0].nodeValue = `What is the reading for this Hiragana: `;
+            console.log("Game reset.");
+        };
+
+        // --- AI Help Functions (Gemini API) ---
+        const openAIHelpModal = (title) => {
+            aiHelpModalTitle.textContent = title;
+            aiHelpModalContent.innerHTML = ''; // Clear previous content
+            toggleVisibility(aiHelpModalLoader, true); // Show loader
+            toggleVisibility(aiHelpModal, true);
+        };
+
+        const closeAIHelpModal = () => {
+            toggleVisibility(aiHelpModal, false);
+            toggleVisibility(aiHelpModalLoader, false); // Hide loader
+            aiHelpModalContent.innerHTML = ''; // Clear content
+        };
+
+        /**
+         * Fetches help from Gemini API.
+         * @param {string} helpType - 'mnemonic' or 'fact'.
+         */
+        const getAIDrivenHelp = async (helpType) => {
+            if (!currentHiraganaForAI) {
+                showMessage("No Hiragana character selected for AI help.", "text-red-500", 2000);
+                return;
+            }
+
+            const { char, reading } = currentHiraganaForAI;
+            let prompt;
+            let modalTitle;
+
+            if (helpType === 'mnemonic') {
+                prompt = `Provide a simple, short, and memorable mnemonic to remember the Japanese Hiragana character '${char}' which is read as '${reading}'. Make it easy for a beginner to understand and visualize. Please format your response using Markdown (e.g., use lists, bolding for key parts).`;
+                modalTitle = `✨ Mnemonic for ${char} (${reading})`;
+            } else if (helpType === 'fact') {
+                prompt = `Tell me an interesting fact, its origin (e.g., from which Kanji it is derived), or a common example word for the Japanese Hiragana character '${char}' (pronounced '${reading}'). Keep it concise and beginner-friendly. Please format your response using Markdown (e.g., use lists for multiple facts, bolding for emphasis).`;
+                modalTitle = `✨ Learn About ${char} (${reading})`;
+            } else {
+                console.error("Unknown AI help type:", helpType);
+                return;
+            }
+
+            openAIHelpModal(modalTitle);
+
+            try {
+                // Gemini API call
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Intentionally empty for Canvas environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Gemini API Error:", errorData);
+                    throw new Error(`API request failed with status ${response.status}: ${errorData.error?.message || 'Unknown error'}`);
+                }
+
+                const result = await response.json();
+
+                toggleVisibility(aiHelpModalLoader, false); // Hide loader
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    // Use marked.parse() to convert Markdown to HTML
+                    aiHelpModalContent.innerHTML = marked.parse(text);
+                } else {
+                    console.error("Unexpected API response structure:", result);
+                    aiHelpModalContent.innerHTML = marked.parse("Sorry, I couldn't get helpful information at this moment. The response from the AI was not as expected.");
+                }
+            } catch (error) {
+                console.error("Error fetching AI help:", error);
+                toggleVisibility(aiHelpModalLoader, false); // Hide loader
+                aiHelpModalContent.innerHTML = marked.parse(`Sorry, an error occurred while fetching help: **${error.message}**. Please try again later.`);
             }
         };
 
+
+        // --- Initial Setup ---
         document.addEventListener('DOMContentLoaded', () => {
-            const gameContainer = document.querySelector('.game');
-            const resultContainer = document.createElement('div');
-            resultContainer.classList.add('result-container');
-            resultContainer.style.border = '1px solid black';
-            resultContainer.style.padding = '10px';
-            resultContainer.style.marginTop = '20px';
-
-            const resultHeader = document.createElement('h3');
-            resultHeader.innerText = 'Result:';
-            resultContainer.appendChild(resultHeader);
-
-            gameContainer.appendChild(resultContainer);
+            // Set default options for marked.js for security and consistency if needed
+            // For example, to ensure it doesn't allow raw HTML within the Markdown from the API if that's a concern.
+            // marked.setOptions({
+            //   sanitize: true, // Deprecated in newer versions, use a DOMPurify-like sanitizer if needed
+            //   pedantic: false,
+            //   gfm: true,
+            //   breaks: false,
+            //   smartLists: true,
+            //   smartypants: false
+            // });
+            console.log("Hiragana Quiz with AI Help Loaded. Select a row to start.");
         });
+
     </script>
 </body>
 
