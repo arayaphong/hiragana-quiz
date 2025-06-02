@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hiragana Pairing Quiz with AI Help</title>
+    <title>แบบทดสอบจับคู่ฮิรางานะพร้อมตัวช่วย AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
@@ -20,19 +20,15 @@
         .table-container th,
         .table-container td {
             border: 1px solid #e2e8f0;
-            /* Tailwind gray-300 */
             padding: 0.75rem;
-            /* Tailwind p-3 */
             min-width: 60px;
             text-align: center;
         }
 
         .table-container tr {
-            /* Applies to all rows, including header and body rows for the cursor */
             cursor: pointer;
         }
 
-        /* Individual tbody rows already have hover:bg-indigo-50 via Tailwind classes */
 
         .choice-button,
         .ai-button {
@@ -43,17 +39,14 @@
         .ai-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            /* Tailwind shadow-md */
         }
 
         .choice-button:active,
         .ai-button:active {
             transform: translateY(0);
             box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-            /* Tailwind shadow-inner */
         }
 
-        /* Styling for the AI Help Modal */
         #aiHelpModalContentWrapper::-webkit-scrollbar {
             width: 8px;
         }
@@ -74,9 +67,7 @@
 
         .loader {
             border: 4px solid #f3f3f3;
-            /* Light grey */
             border-top: 4px solid #6366f1;
-            /* Indigo */
             border-radius: 50%;
             width: 30px;
             height: 30px;
@@ -94,7 +85,6 @@
             }
         }
 
-        /* Styles for Markdown content in AI Help Modal */
         #aiHelpModalContent h1,
         #aiHelpModalContent h2,
         #aiHelpModalContent h3 {
@@ -103,68 +93,38 @@
             margin-bottom: 0.25em;
         }
 
-        #aiHelpModalContent h1 {
-            font-size: 1.5em;
-        }
-
-        #aiHelpModalContent h2 {
-            font-size: 1.25em;
-        }
-
-        #aiHelpModalContent h3 {
-            font-size: 1.1em;
-        }
-
-        #aiHelpModalContent p {
-            margin-bottom: 0.5em;
-        }
-
+        #aiHelpModalContent h1 { font-size: 1.5em; }
+        #aiHelpModalContent h2 { font-size: 1.25em; }
+        #aiHelpModalContent h3 { font-size: 1.1em; }
+        #aiHelpModalContent p { margin-bottom: 0.5em; }
         #aiHelpModalContent ul,
         #aiHelpModalContent ol {
             margin-left: 1.5em;
             margin-bottom: 0.5em;
             list-style-position: outside;
         }
-
-        #aiHelpModalContent ul {
-            list-style-type: disc;
-        }
-
-        #aiHelpModalContent ol {
-            list-style-type: decimal;
-        }
-
-        #aiHelpModalContent strong {
-            font-weight: bold;
-        }
-
-        #aiHelpModalContent em {
-            font-style: italic;
-        }
-
+        #aiHelpModalContent ul { list-style-type: disc; }
+        #aiHelpModalContent ol { list-style-type: decimal; }
+        #aiHelpModalContent strong { font-weight: bold; }
+        #aiHelpModalContent em { font-style: italic; }
         #aiHelpModalContent code {
             background-color: #f3f4f6;
-            /* Tailwind gray-100 */
             padding: 0.1em 0.3em;
             border-radius: 0.25rem;
-            /* Tailwind rounded-sm */
             font-family: monospace;
         }
-
         #aiHelpModalContent pre {
             background-color: #f3f4f6;
-            /* Tailwind gray-100 */
             padding: 0.5em;
             border-radius: 0.375rem;
-            /* Tailwind rounded-md */
             overflow-x: auto;
             margin-bottom: 0.5em;
         }
-
         #aiHelpModalContent pre code {
             padding: 0;
             background-color: transparent;
         }
+
     </style>
 </head>
 
@@ -172,15 +132,15 @@
     class="bg-gradient-to-br from-sky-100 to-indigo-200 min-h-screen flex flex-col items-center justify-center p-4 text-gray-800">
     <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-2xl">
         <header class="mb-6 sm:mb-8 text-center">
-            <h1 class="text-3xl sm:text-4xl font-bold text-indigo-600">Hiragana Pairing Quiz</h1>
-            <p class="text-gray-600 mt-2">Test your Hiragana knowledge with AI assistance!</p>
+            <h1 class="text-3xl sm:text-4xl font-bold text-indigo-600">แบบทดสอบจับคู่ฮิรางานะ</h1>
+            <p class="text-gray-600 mt-2">ทดสอบความรู้ฮิรางานะของคุณด้วยความช่วยเหลือจาก AI!</p>
         </header>
 
         <div class="table-container">
             <table class="w-full rounded-lg overflow-hidden shadow-md">
                 <thead class="bg-indigo-500 text-white">
                     <tr>
-                        <th class="p-3">Vowels</th>
+                        <th class="p-3">สระ</th>
                         <th class="p-3">A</th>
                         <th class="p-3">I</th>
                         <th class="p-3">U</th>
@@ -240,10 +200,8 @@
                     <tr onclick="selectRow('y')" class="hover:bg-indigo-50 transition-colors duration-150">
                         <td class="font-medium text-indigo-700 p-3">Y</td>
                         <td class="p-3">や (ya)</td>
-                        <td class="p-3 text-gray-400">-</td>
-                        <td class="p-3">ゆ (yu)</td>
-                        <td class="p-3 text-gray-400">-</td>
-                        <td class="p-3">よ (yo)</td>
+                        <td class="p-3 text-gray-400">-</td> <td class="p-3">ゆ (yu)</td>
+                        <td class="p-3 text-gray-400">-</td> <td class="p-3">よ (yo)</td>
                     </tr>
                     <tr onclick="selectRow('r')" class="hover:bg-indigo-50 transition-colors duration-150">
                         <td class="font-medium text-indigo-700 p-3">R</td>
@@ -256,71 +214,60 @@
                     <tr onclick="selectRow('w')" class="hover:bg-indigo-50 transition-colors duration-150">
                         <td class="font-medium text-indigo-700 p-3">W</td>
                         <td class="p-3">わ (wa)</td>
-                        <td class="p-3 text-gray-400">-</td>
-                        <td class="p-3 text-gray-400">-</td>
-                        <td class="p-3 text-gray-400">-</td>
-                        <td class="p-3">を (wo)</td>
+                        <td class="p-3 text-gray-400">-</td> <td class="p-3 text-gray-400">-</td> <td class="p-3 text-gray-400">-</td> <td class="p-3">を (wo)</td>
                     </tr>
                     <tr onclick="selectRow('ns')" class="hover:bg-indigo-50 transition-colors duration-150">
                         <td class="font-medium text-indigo-700 p-3">Ns</td>
-                        <td class="p-3 text-gray-400">-</td>
-                        <td class="p-3 text-gray-400">-</td>
-                        <td class="p-3">ん (n)</td>
-                        <td class="p-3 text-gray-400">-</td>
-                        <td class="p-3 text-gray-400">-</td>
-                    </tr>
+                        <td class="p-3 text-gray-400">-</td> <td class="p-3 text-gray-400">-</td> <td class="p-3">ん (n)</td>
+                        <td class="p-3 text-gray-400">-</td> <td class="p-3 text-gray-400">-</td> </tr>
                 </tbody>
             </table>
         </div>
 
         <div class="game hidden mt-6 sm:mt-8">
             <div id="questionArea" class="mb-6 p-4 bg-indigo-50 rounded-lg text-center">
-                <p class="text-xl sm:text-2xl font-semibold text-indigo-700" id="questionText">What is the reading for
-                    this Hiragana: <span class="text-4xl sm:text-5xl font-bold" id="hiraganaCharacter"></span>?</p>
+                <p class="text-xl sm:text-2xl font-semibold text-indigo-700" id="questionText">เสียงอ่านของฮิรางานะตัวนี้คืออะไร: <span class="text-4xl sm:text-5xl font-bold" id="hiraganaCharacter"></span>?</p>
             </div>
 
             <div id="choicesArea" class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
-            </div>
+                </div>
 
-            <div id="scoreArea" class="text-lg font-medium text-center mb-4">Score: <span id="currentScore"
+            <div id="scoreArea" class="text-lg font-medium text-center mb-4">คะแนน: <span id="currentScore"
                     class="font-bold text-indigo-600">0</span> / <span id="totalQuestionsInQuiz"
                     class="font-bold text-indigo-600">0</span></div>
 
             <div id="messageArea" class="min-h-[2.5em] mb-6 text-center">
-            </div>
+                </div>
 
             <div id="aiHelpSection" class="hidden mt-4 p-4 border-t border-gray-200 text-center">
-                <p class="mb-3 text-gray-700">Need help with <strong id="aiHelpCharReading"
+                <p class="mb-3 text-gray-700">ต้องการความช่วยเหลือเกี่ยวกับ <strong id="aiHelpCharReading"
                         class="text-indigo-600"></strong>?</p>
                 <div class="flex flex-col sm:flex-row justify-center gap-3">
                     <button id="getMnemonicButton" onclick="getAIDrivenHelp('mnemonic')"
                         class="ai-button w-full sm:w-auto bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50">✨
-                        Get Mnemonic</button>
+                        รับเทคนิคช่วยจำ</button>
                     <button id="getFactButton" onclick="getAIDrivenHelp('fact')"
                         class="ai-button w-full sm:w-auto bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50">✨
-                        Learn More</button>
+                        เรียนรู้เพิ่มเติม</button>
                 </div>
             </div>
 
             <div class="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mt-6">
                 <button id="nextQuestionButton" onclick="nextQuestion()"
-                    class="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 choice-button">Next
-                    Question</button>
+                    class="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 choice-button">คำถามถัดไป</button>
                 <button onclick="resetGame()"
-                    class="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 choice-button">Restart
-                    Game</button>
+                    class="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 choice-button">เริ่มเกมใหม่</button>
             </div>
         </div>
 
         <div id="gameOverModal"
             class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
             <div class="bg-white p-8 rounded-xl shadow-2xl text-center max-w-md w-full">
-                <h2 id="gameOverTitle" class="text-2xl sm:text-3xl font-bold text-indigo-600 mb-4">Game Over!</h2>
-                <p id="gameOverMessage" class="text-lg mb-6">Your final score is <span id="finalScore"
+                <h2 id="gameOverTitle" class="text-2xl sm:text-3xl font-bold text-indigo-600 mb-4">จบเกม!</h2>
+                <p id="gameOverMessage" class="text-lg mb-6">คะแนนสุดท้ายของคุณคือ <span id="finalScore"
                         class="font-bold">0</span>/<span id="finalTotal" class="font-bold">0</span>.</p>
                 <button onclick="closeModalAndReset()"
-                    class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 choice-button">Play
-                    Again</button>
+                    class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 choice-button">เล่นอีกครั้ง</button>
             </div>
         </div>
 
@@ -328,24 +275,20 @@
             class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
             <div class="bg-white p-6 rounded-xl shadow-2xl max-w-lg w-full">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 id="aiHelpModalTitle" class="text-xl font-semibold text-indigo-600">AI Learning Assistant</h3>
+                    <h3 id="aiHelpModalTitle" class="text-xl font-semibold text-indigo-600">ผู้ช่วยเรียนรู้ AI</h3>
                     <button onclick="closeAIHelpModal()"
                         class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
                 </div>
                 <div id="aiHelpModalContentWrapper" class="max-h-[60vh] overflow-y-auto">
-                    <div id="aiHelpModalLoader" class="loader hidden"></div>
-                    <div id="aiHelpModalContent" class="text-gray-700 space-y-2">
-                    </div>
+                    <div id="aiHelpModalLoader" class="loader hidden"></div> <div id="aiHelpModalContent" class="text-gray-700 space-y-2">
+                        </div>
                 </div>
                 <button onclick="closeAIHelpModal()"
-                    class="mt-6 w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">Close</button>
+                    class="mt-6 w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">ปิด</button>
             </div>
         </div>
 
-    </div>
-
-    <script>
-        // --- Data ---
+    </div> <script>
         const hiraganaData = {
             k: ['か (ka)', 'き (ki)', 'く (ku)', 'け (ke)', 'こ (ko)'],
             s: ['さ (sa)', 'し (shi)', 'す (su)', 'せ (se)', 'そ (so)'],
@@ -359,15 +302,13 @@
             ns: [null, null, 'ん (n)', null, null]
         };
 
-        // --- State Variables ---
         let selectedRowKey = null;
         let currentQuestionsSet = [];
         let currentQuestionIndex = 0;
         let score = 0;
         const totalQuestionsPerQuiz = 10;
-        let currentHiraganaForAI = null; // Stores {char, reading} for AI help
+        let currentHiraganaForAI = null;
 
-        // --- DOM Elements ---
         const tableContainer = document.querySelector('.table-container');
         const gameContainer = document.querySelector('.game');
         const questionTextElement = document.getElementById('questionText');
@@ -391,10 +332,13 @@
         const aiHelpModalContent = document.getElementById('aiHelpModalContent');
         const aiHelpModalLoader = document.getElementById('aiHelpModalLoader');
 
-        // --- Utility Functions ---
+
         const toggleVisibility = (element, show) => {
-            if (element) element.classList.toggle('hidden', !show);
-            else console.error("Attempted to toggle visibility of a null element.");
+            if (element) {
+                element.classList.toggle('hidden', !show);
+            } else {
+                console.error("พยายามสลับการมองเห็นขององค์ประกอบที่เป็น null ซึ่งอาจบ่งชี้ถึงการพิมพ์ผิดใน ID หรือตัวเลือกคลาส หรือองค์ประกอบอาจไม่อยู่ใน DOM เมื่อฟังก์ชันนี้ถูกเรียก");
+            }
         };
 
         const shuffleArray = (array) => {
@@ -410,28 +354,32 @@
             return match ? { char: match[1], reading: match[2] } : null;
         };
 
-        // --- Game Logic Functions ---
+
         const selectRow = (rowKey) => {
             selectedRowKey = rowKey;
             const rowData = hiraganaData[rowKey].filter(item => item !== null);
+
             if (rowData.length === 0) {
-                showMessage("This row has no characters to quiz.", "text-red-500", 3000);
+                showMessage("แถวนี้ไม่มีอักขระให้ทดสอบ", "text-red-500", 3000);
                 return;
             }
+
             currentQuestionsSet = [];
             while (currentQuestionsSet.length < totalQuestionsPerQuiz) {
                 currentQuestionsSet.push(...rowData);
             }
             currentQuestionsSet = currentQuestionsSet.slice(0, totalQuestionsPerQuiz);
             shuffleArray(currentQuestionsSet);
+
             currentQuestionIndex = 0;
             score = 0;
             updateScoreDisplay();
             totalQuestionsInQuizElement.textContent = currentQuestionsSet.length;
+
             toggleVisibility(tableContainer, false);
             toggleVisibility(gameContainer, true);
             toggleVisibility(nextQuestionButton, false);
-            toggleVisibility(aiHelpSection, false); // Hide AI help initially
+            toggleVisibility(aiHelpSection, false);
             messageArea.textContent = '';
             displayQuestion();
         };
@@ -441,37 +389,45 @@
                 endGame();
                 return;
             }
+
             const questionString = currentQuestionsSet[currentQuestionIndex];
             const parsedQuestion = parseHiraganaString(questionString);
+
             if (!parsedQuestion) {
-                console.error("Invalid question data:", questionString);
-                showMessage("Error: Invalid question. Skipping.", "text-red-500", 3000);
+                console.error("ข้อมูลคำถามไม่ถูกต้อง:", questionString);
+                showMessage("ข้อผิดพลาด: คำถามไม่ถูกต้อง กำลังข้าม", "text-red-500", 3000);
                 currentQuestionIndex++;
                 setTimeout(displayQuestion, 50);
                 return;
             }
-            currentHiraganaForAI = parsedQuestion; // Store for AI help
+
+            currentHiraganaForAI = parsedQuestion;
             hiraganaCharacterElement.textContent = parsedQuestion.char;
-            questionTextElement.childNodes[0].nodeValue = `What is the reading for this Hiragana: `;
+            questionTextElement.childNodes[0].nodeValue = `เสียงอ่านของฮิรางานะตัวนี้คืออะไร: `;
+
             generateChoices(parsedQuestion);
             toggleVisibility(nextQuestionButton, false);
-            toggleVisibility(aiHelpSection, false); // Hide AI help until answer
+            toggleVisibility(aiHelpSection, false);
             messageArea.textContent = '';
         };
 
         const generateChoices = (correctParsedItem) => {
             choicesArea.innerHTML = '';
             let choices = [correctParsedItem.reading];
+
             const allPossibleReadingsInRow = hiraganaData[selectedRowKey]
                 .filter(item => item !== null)
                 .map(item => parseHiraganaString(item)?.reading)
                 .filter(reading => reading && reading !== correctParsedItem.reading);
+
             shuffleArray(allPossibleReadingsInRow);
+
             for (let i = 0; choices.length < 4 && i < allPossibleReadingsInRow.length; i++) {
                 if (!choices.includes(allPossibleReadingsInRow[i])) {
                     choices.push(allPossibleReadingsInRow[i]);
                 }
             }
+
             if (choices.length < 2 && Object.keys(hiraganaData).length > 1) {
                 const otherReadings = [];
                 for (const key in hiraganaData) {
@@ -486,10 +442,11 @@
                 }
                 shuffleArray(otherReadings);
                 for (let i = 0; choices.length < 4 && i < otherReadings.length; i++) {
-                    if (!choices.includes(otherReadings[i])) choices.push(otherReadings[i]);
+                     if (!choices.includes(otherReadings[i])) choices.push(otherReadings[i]);
                 }
             }
             shuffleArray(choices);
+
             choices.forEach(reading => {
                 const button = document.createElement('button');
                 button.textContent = reading;
@@ -501,21 +458,22 @@
 
         const checkAnswer = (selectedReading, correctReading) => {
             choicesArea.querySelectorAll('button').forEach(button => button.disabled = true);
+
             if (selectedReading === correctReading) {
                 score++;
-                showMessage("Correct!", "text-green-500 font-bold", 1500);
+                showMessage("ถูกต้อง!", "text-green-500 font-bold", 1500);
             } else {
-                showMessage(`Wrong! Correct: ${correctReading}`, "text-red-500 font-bold", 2000);
+                showMessage(`ผิด! คำตอบที่ถูกต้อง: ${correctReading}`, "text-red-500 font-bold", 2000);
             }
             updateScoreDisplay();
             aiHelpCharReadingElement.textContent = `${currentHiraganaForAI.char} (${currentHiraganaForAI.reading})`;
-            toggleVisibility(aiHelpSection, true); // Show AI help section
-            toggleVisibility(nextQuestionButton, true);
+            toggleVisibility(aiHelpSection, true);
+            toggleVisibility(nextQuestionButton, true); // แสดงปุ่ม "คำถามถัดไป"
         };
 
         const nextQuestion = () => {
             currentQuestionIndex++;
-            displayQuestion(); // This will hide AI help section again
+            displayQuestion();
         };
 
         const updateScoreDisplay = () => {
@@ -538,20 +496,22 @@
         const endGame = () => {
             finalScoreElement.textContent = score;
             finalTotalElement.textContent = currentQuestionsSet.length;
-            let msg = `Your final score is ${score}/${currentQuestionsSet.length}.`;
+            let msg = `คะแนนสุดท้ายของคุณคือ ${score}/${currentQuestionsSet.length}.`;
+
             if (score === currentQuestionsSet.length) {
-                gameOverTitle.textContent = "🎉 Perfect! 🎉";
-                msg += " Excellent work!";
+                gameOverTitle.textContent = "🎉 ยอดเยี่ยม! 🎉";
+                msg += " ทำได้ดีมาก!";
             } else if (score >= currentQuestionsSet.length * 0.7) {
-                gameOverTitle.textContent = "👍 Great Job! 👍";
-                msg += " You're doing great!";
+                gameOverTitle.textContent = "👍 เยี่ยมมาก! 👍";
+                msg += " คุณทำได้ดีมาก!";
             } else {
-                gameOverTitle.textContent = "Game Over!";
-                msg += " Keep practicing!";
+                gameOverTitle.textContent = "จบเกม!";
+                msg += " ฝึกฝนต่อไปนะ!";
             }
+
             gameOverMessage.childNodes[0].nodeValue = msg;
             toggleVisibility(gameOverModal, true);
-            toggleVisibility(aiHelpSection, false); // Hide AI help on game over
+            toggleVisibility(aiHelpSection, false);
         };
 
         const closeModalAndReset = () => {
@@ -566,64 +526,44 @@
             score = 0;
             currentHiraganaForAI = null;
             updateScoreDisplay();
+
             toggleVisibility(gameContainer, false);
             toggleVisibility(tableContainer, true);
             toggleVisibility(gameOverModal, false);
             toggleVisibility(aiHelpSection, false);
+
             choicesArea.innerHTML = '';
             messageArea.textContent = '';
             messageArea.className = 'min-h-[2.5em] mb-6 text-center';
             hiraganaCharacterElement.textContent = '';
-            questionTextElement.childNodes[0].nodeValue = `What is the reading for this Hiragana: `;
-            console.log("Game reset.");
+            questionTextElement.childNodes[0].nodeValue = `เสียงอ่านของฮิรางานะตัวนี้คืออะไร: `;
+            console.log("รีเซ็ตเกมแล้ว");
         };
 
-        // --- AI Help Functions (Gemini API) ---
         const openAIHelpModal = (title) => {
             aiHelpModalTitle.textContent = title;
-            aiHelpModalContent.innerHTML = ''; // Clear previous content
-            toggleVisibility(aiHelpModalLoader, true); // Show loader
+            aiHelpModalContent.innerHTML = '';
+            toggleVisibility(aiHelpModalLoader, true);
             toggleVisibility(aiHelpModal, true);
         };
 
         const closeAIHelpModal = () => {
             toggleVisibility(aiHelpModal, false);
-            toggleVisibility(aiHelpModalLoader, false); // Hide loader
-            aiHelpModalContent.innerHTML = ''; // Clear content
+            toggleVisibility(aiHelpModalLoader, false);
+            aiHelpModalContent.innerHTML = '';
         };
 
-        /**
-         * Fetches help from Gemini API.
-         * @param {string} helpType - 'mnemonic' or 'fact'.
-         */
-        const getAIDrivenHelp = async (helpType) => {
-            if (!currentHiraganaForAI) {
-                showMessage("No Hiragana character selected for AI help.", "text-red-500", 2000);
-                return;
+        async function translateToThaiExplicitly(textToTranslate) {
+            if (!textToTranslate || textToTranslate.trim() === "") {
+                return "";
             }
 
-            const { char, reading } = currentHiraganaForAI;
-            let prompt;
-            let modalTitle;
-
-            if (helpType === 'mnemonic') {
-                prompt = `Provide a simple, short, and memorable mnemonic to remember the Japanese Hiragana character '${char}' which is read as '${reading}'. Make it easy for a beginner to understand and visualize. Please format your response using Markdown (e.g., use lists, bolding for key parts).`;
-                modalTitle = `✨ Mnemonic for ${char} (${reading})`;
-            } else if (helpType === 'fact') {
-                prompt = `Tell me an interesting fact, its origin (e.g., from which Kanji it is derived), or a common example word for the Japanese Hiragana character '${char}' (pronounced '${reading}'). Keep it concise and beginner-friendly. Please format your response using Markdown (e.g., use lists for multiple facts, bolding for emphasis).`;
-                modalTitle = `✨ Learn About ${char} (${reading})`;
-            } else {
-                console.error("Unknown AI help type:", helpType);
-                return;
-            }
-
-            openAIHelpModal(modalTitle);
+            const translationPrompt = `Translate the following text accurately and naturally into Thai. Preserve Markdown formatting if present. Text to translate: "${textToTranslate}" Respond ONLY with the translated Thai text.`;
 
             try {
-                // Gemini API call
-                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // Intentionally empty for Canvas environment
+                let translationChatHistory = [{ role: "user", parts: [{ text: translationPrompt }] }];
+                const payload = { contents: translationChatHistory };
+                const apiKey = ""; // API key จัดการโดยสภาพแวดล้อม Canvas ปล่อยว่างไว้
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                 const response = await fetch(apiUrl, {
@@ -634,45 +574,98 @@
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    console.error("Gemini API Error:", errorData);
-                    throw new Error(`API request failed with status ${response.status}: ${errorData.error?.message || 'Unknown error'}`);
+                    console.error("Gemini Translation API Error:", errorData);
+                    return `(ข้อผิดพลาดในการแปล) ${textToTranslate}`;
                 }
 
-                const result = await response.json();
+                const translationResult = await response.json();
+                console.log("ผลลัพธ์จาก API การแปล:", translationResult);
 
-                toggleVisibility(aiHelpModalLoader, false); // Hide loader
-
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    // Use marked.parse() to convert Markdown to HTML
-                    aiHelpModalContent.innerHTML = marked.parse(text);
+                if (translationResult.candidates && translationResult.candidates.length > 0 &&
+                    translationResult.candidates[0].content && translationResult.candidates[0].content.parts &&
+                    translationResult.candidates[0].content.parts.length > 0) {
+                    return translationResult.candidates[0].content.parts[0].text;
                 } else {
-                    console.error("Unexpected API response structure:", result);
-                    aiHelpModalContent.innerHTML = marked.parse("Sorry, I couldn't get helpful information at this moment. The response from the AI was not as expected.");
+                    console.error("โครงสร้างการตอบสนอง API การแปลที่ไม่คาดคิด:", translationResult);
+                    return `(ข้อผิดพลาดโครงสร้างการแปล) ${textToTranslate}`;
                 }
             } catch (error) {
-                console.error("Error fetching AI help:", error);
-                toggleVisibility(aiHelpModalLoader, false); // Hide loader
-                aiHelpModalContent.innerHTML = marked.parse(`Sorry, an error occurred while fetching help: **${error.message}**. Please try again later.`);
+                console.error("เกิดข้อผิดพลาดระหว่างการแปล:", error);
+                return `(ข้อยกเว้นในการแปล) ${textToTranslate}`;
+            }
+        }
+
+        const getAIDrivenHelp = async (helpType) => {
+            if (!currentHiraganaForAI) {
+                showMessage("ไม่ได้เลือกอักขระฮิรางานะสำหรับความช่วยเหลือ AI", "text-red-500", 2000);
+                return;
+            }
+
+            const { char, reading } = currentHiraganaForAI;
+            let initialPrompt; 
+            let modalTitle;
+
+            if (helpType === 'mnemonic') {
+                initialPrompt = `สำหรับอักษรฮิรางานะของญี่ปุ่นตัว '${char}' ซึ่งอ่านว่า '${reading}', ขอเทคนิคช่วยจำสั้นๆ เป็นภาษาไทยที่น่าจดจำและเข้าใจง่ายสำหรับผู้เริ่มต้น โปรดใช้ Markdown และตอบเป็นภาษาไทยเท่านั้น`;
+                modalTitle = `✨ เทคนิคช่วยจำสำหรับ ${char} (${reading})`;
+            } else if (helpType === 'fact') {
+                initialPrompt = `สำหรับอักษรฮิรางานะของญี่ปุ่นตัว '${char}' ซึ่งอ่านว่า '${reading}', โปรดบอกข้อเท็จจริงที่น่าสนใจเป็นภาษาไทย เกี่ยวกับที่มาของอักษรตัวนี้ (เช่น มาจากคันจิตัวใด), หรือตัวอย่างคำศัพท์ภาษาญี่ปุ่นที่ใช้ '${char}' บ่อยๆ ขอแบบกระชับและเข้าใจง่ายสำหรับผู้เริ่มต้น โปรดจัดรูปแบบคำตอบเป็น Markdown และตรวจสอบให้แน่ใจว่าคำอธิบายและตัวอย่างทั้งหมดเป็นภาษาไทย`;
+                modalTitle = `✨ เรียนรู้เกี่ยวกับ ${char} (${reading})`;
+            } else {
+                console.error("ไม่ทราบประเภทความช่วยเหลือ AI:", helpType);
+                return;
+            }
+
+            openAIHelpModal(modalTitle); 
+
+            try {
+                let initialChatHistory = [{ role: "user", parts: [{ text: initialPrompt }] }];
+                const initialPayload = { contents: initialChatHistory };
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const initialResponse = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(initialPayload)
+                });
+
+                if (!initialResponse.ok) { 
+                    const errorData = await initialResponse.json();
+                    console.error("ข้อผิดพลาด Gemini API เบื้องต้น:", errorData);
+                    throw new Error(`คำขอ API เบื้องต้นล้มเหลวด้วยสถานะ ${initialResponse.status}: ${errorData.error?.message || 'ข้อผิดพลาดที่ไม่รู้จัก'}`);
+                }
+
+                const initialResult = await initialResponse.json();
+                console.log("ผลลัพธ์ API เบื้องต้น:",initialResult); 
+
+                toggleVisibility(aiHelpModalLoader, false); 
+
+                if (initialResult.candidates && initialResult.candidates.length > 0 &&
+                    initialResult.candidates[0].content && initialResult.candidates[0].content.parts &&
+                    initialResult.candidates[0].content.parts.length > 0) {
+                    
+                    const textFromInitialApi = initialResult.candidates[0].content.parts[0].text;
+                    
+                    toggleVisibility(aiHelpModalLoader, true);
+                    const finalTextToDisplay = await translateToThaiExplicitly(textFromInitialApi);
+                    toggleVisibility(aiHelpModalLoader, false);
+
+                    aiHelpModalContent.innerHTML = marked.parse(finalTextToDisplay);
+
+                } else {
+                    console.error("โครงสร้างการตอบสนอง API เบื้องต้นที่ไม่คาดคิด:", initialResult);
+                    aiHelpModalContent.innerHTML = marked.parse("ขออภัย ไม่สามารถรับข้อมูลที่เป็นประโยชน์ได้ในขณะนี้ การตอบสนองจาก AI ไม่เป็นไปตามที่คาดไว้");
+                }
+            } catch (error) { 
+                console.error("ข้อผิดพลาดในการดึงข้อมูลความช่วยเหลือ AI:", error);
+                toggleVisibility(aiHelpModalLoader, false); 
+                aiHelpModalContent.innerHTML = marked.parse(`ขออภัย เกิดข้อผิดพลาดขณะดึงข้อมูลความช่วยเหลือ: **${error.message}** กรุณาลองใหม่อีกครั้งในภายหลัง`);
             }
         };
 
-
-        // --- Initial Setup ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Set default options for marked.js for security and consistency if needed
-            // For example, to ensure it doesn't allow raw HTML within the Markdown from the API if that's a concern.
-            // marked.setOptions({
-            //   sanitize: true, // Deprecated in newer versions, use a DOMPurify-like sanitizer if needed
-            //   pedantic: false,
-            //   gfm: true,
-            //   breaks: false,
-            //   smartLists: true,
-            //   smartypants: false
-            // });
-            console.log("Hiragana Quiz with AI Help Loaded. Select a row to start.");
+            console.log("โหลดแบบทดสอบฮิรางานะพร้อมความช่วยเหลือ AI แล้ว เลือกแถวจากตารางเพื่อเริ่มแบบทดสอบ");
         });
 
     </script>
